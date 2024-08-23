@@ -6,7 +6,10 @@
   "scripts": {
     "proto-gen": "./proto-gen.sh",
     "user-server": "ts-node server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typeorm:run": "npx typeorm-ts-node-commonjs migration:run -d src/data-source.ts",
+    "typeorm:generate": "npx typeorm-ts-node-commonjs migration:generate -d src/data-source.ts",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
   },
   "keywords": [],
   "author": "",
@@ -15,11 +18,21 @@
     "@grpc/grpc-js": "^1.11.1",
     "@grpc/proto-loader": "^0.7.13",
     "@types/bcrypt": "^5.0.2",
+    "@types/dotenv-flow": "^3.3.3",
     "@types/jsonwebtoken": "^9.0.6",
-    "mysql": "^2.18.1",
+    "bcryptjs": "^2.4.3",
+    "dotenv-flow": "^4.1.0",
+    "mysql2": "^3.11.0",
+    "reflect-metadata": "^0.2.2",
     "ts-node": "^10.9.2",
     "typeorm": "^0.3.20",
     "typescript": "^5.5.4",
+    "uuid": "^10.0.0",
     "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^22.5.0",
+    "tsconfig-paths": "^4.2.0"
   }
 }
