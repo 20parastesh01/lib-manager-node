@@ -1,6 +1,6 @@
 import { isPassword, Password } from "../types/password";
 import { UserException } from "./exceptions/user.exception";
-import { SignupRequest } from "./requests/singup.request";
+import { SignupRequest } from "./requests/signup.request";
 import bcrypt from "bcryptjs";
 import { AccessToken } from "./responses/accestoken.response";
 import { AuthServiceInterface } from "../application-layer/auth.service.interface";
