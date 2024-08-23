@@ -8,7 +8,7 @@ import { SignupRequest__Output } from "./proto/userPackage/SignupRequest";
 import { UserRepository } from "./src/persist-layer/user.repository";
 import { AuthService } from "./src/application-layer/auth.service";
 import { UserController } from "./src/controller/user.controller";
-import { UserException } from "./src/controller/exceptions/user.exception";
+import { UserException } from "./src/exceptions/user.exception";
 import { signupRequest } from "./src/controller/requests/signup.request";
 import { loginRequest } from "./src/controller/requests/login.request";
 import { LoginRequest__Output } from "./proto/userPackage/LoginRequest";

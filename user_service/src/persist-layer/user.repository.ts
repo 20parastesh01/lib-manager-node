@@ -1,7 +1,7 @@
 import { UserDAO } from "../application-layer/DAOs/user.dao";
 import { UserWithPass } from "../application-layer/DAOs/userwithpass.dao";
 import { UserDTO } from "../application-layer/DTOs/user.dto";
-import { UserException } from "../controller/exceptions/user.exception";
+import { UserException } from "../exceptions/user.exception";
 import { Email } from "../types/email";
 import { UserEntity } from "./entities/user.entity";
 import { DataSource, In, Not, Repository } from "typeorm";

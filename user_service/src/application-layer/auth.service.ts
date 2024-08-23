@@ -1,4 +1,4 @@
-import { UserException } from "../controller/exceptions/user.exception";
+import { UserException } from "../exceptions/user.exception";
 import { UserRepositoryInterface } from "../persist-layer/user.respository.interface";
 import { isToken, Token } from "../types/token";
 import { UserDAO } from "./DAOs/user.dao";

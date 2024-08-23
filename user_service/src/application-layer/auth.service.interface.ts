@@ -1,4 +1,4 @@
-import { UserException } from "../controller/exceptions/user.exception";
+import { UserException } from "../exceptions/user.exception";
 import { LoginRequest } from "../controller/requests/login.request";
 import { Token } from "../types/token";
 import { AuthService } from "./auth.service";
