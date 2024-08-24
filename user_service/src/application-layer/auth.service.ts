@@ -7,6 +7,7 @@ import { UserDTO } from "./DTOs/user.dto";
 import { Hashed } from "../types/hash";
 import bcrypt from "bcryptjs";
 import { LoginRequest } from "../controller/requests/login.request";
+import { Email } from "../types/email";
 
 const SECRET_KEY = process.env.SECRET_KEY!;
 
@@ -72,5 +73,15 @@ export class AuthService {
       }
       return new UserException("Unexpected error", 500);
     }
+  }
+
+  async findUser(email: Email) {
+    try {
+      return this.userRepo.findIdByEmail(email);
+    } catch (e) {
+      if (e instanceof UserException)
+        throw new UserException(e.message, e.code);
+    }
+    return new UserException("unexpected error", 500);
   }
 }

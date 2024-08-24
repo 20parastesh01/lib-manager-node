@@ -1,13 +1,11 @@
-export class CustomError extends Error {}
-
-export class UserException extends CustomError {
+export class ValidationException extends Error {
   public code: number;
 
   constructor(message: string, code: number) {
     super(message);
     this.code = code;
 
-    Object.setPrototypeOf(this, UserException.prototype);
+    Object.setPrototypeOf(this, ValidationException.prototype);
 
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);

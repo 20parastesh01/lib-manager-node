@@ -36,4 +36,11 @@ export class UserRepository {
     };
     return userWithPass;
   }
+
+  async findIdByEmail(email: Email): Promise<string | UserException> {
+    const userEntity = await this.userRepo.findOneBy({ email });
+    if (!userEntity) throw new UserException("failed to find user", 500);
+    const userId = userEntity.id;
+    return userId;
+  }
 }

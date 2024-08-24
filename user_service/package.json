@@ -9,7 +9,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "typeorm:run": "npx typeorm-ts-node-commonjs migration:run -d src/data-source.ts",
     "typeorm:generate": "npx typeorm-ts-node-commonjs migration:generate -d src/data-source.ts",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "start:dev": "nodemon server.ts"
   },
   "keywords": [],
   "author": "",

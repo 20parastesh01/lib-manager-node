@@ -12,6 +12,8 @@ import { UserException } from "./src/exceptions/user.exception";
 import { signupRequest } from "./src/controller/requests/signup.request";
 import { loginRequest } from "./src/controller/requests/login.request";
 import { LoginRequest__Output } from "./proto/userPackage/LoginRequest";
+import { ValidateTokenReqeust__Output } from "./proto/userPackage/ValidateTokenReqeust";
+import { validateTokenRequest } from "./src/controller/requests/validate-token.request";
 
 const PORT = 50051;
 const PROTO_FILE = "./proto/user.proto";
@@ -81,6 +83,26 @@ function getServer() {
           });
         } else {
           callback(null, { token: accessTokenOrError.accessToken });
+        }
+      } catch (e) {
+        callback({
+          code: grpc.status.INTERNAL,
+          message: "Internal server error",
+        });
+      }
+    },
+    ValidateToken: async (call, callback) => {
+      const req = call.request as ValidateTokenReqeust__Output;
+      const data = validateTokenRequest.parse(req);
+      try {
+        const userIdOrError = await userController.validateToken(data);
+        if (userIdOrError instanceof UserException) {
+          callback({
+            code: grpc.status.INTERNAL,
+            message: userIdOrError.message,
+          });
+        } else {
+          callback(null, { userId: userIdOrError });
         }
       } catch (e) {
         callback({

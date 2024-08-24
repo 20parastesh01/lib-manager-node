@@ -5,6 +5,7 @@ package userPackage;
 service UserService {
     rpc Signup(SignupRequest) returns (SignupResponse) {};
     rpc Login(LoginRequest) returns (LoginResponse) {};
+    rpc ValidateToken(ValidateTokenReqeust) returns (ValidateTokenResponse) {};
 }
 
 message SignupRequest {
@@ -24,4 +25,12 @@ message LoginRequest {
   
 message LoginResponse {
     string token = 1;
+}
+
+message ValidateTokenReqeust {
+    string token = 1;
+}
+
+message ValidateTokenResponse {
+    string userId = 1;
 }

@@ -14,6 +14,8 @@ export interface ProtoGrpcType {
     SignupRequest: MessageTypeDefinition
     SignupResponse: MessageTypeDefinition
     UserService: SubtypeConstructor<typeof grpc.Client, _userPackage_UserServiceClient> & { service: _userPackage_UserServiceDefinition }
+    ValidateTokenReqeust: MessageTypeDefinition
+    ValidateTokenResponse: MessageTypeDefinition
   }
 }
 
