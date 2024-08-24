@@ -13,7 +13,9 @@ const SECRET_KEY = process.env.SECRET_KEY!;
 
 export const generateToken = (data: UserDAO): Token | UserException => {
   try {
-    const token = jwt.sign(data, SECRET_KEY, { expiresIn: 7200 });
+    const token = jwt.sign(data, SECRET_KEY, {
+      expiresIn: 7200,
+    });
     if (isToken(token)) return token as Token;
   } catch (e) {
     throw new UserException("failed to generate token", 500);

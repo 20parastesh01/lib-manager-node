@@ -9,6 +9,9 @@ import { LoginResponse__Output } from "../user_service/proto/userPackage/LoginRe
 import { CreateBookResponse__Output } from "../book_service/proto/bookPackage/CreateBookResponse";
 import { ValidationException } from "./exceptions/ValidationException";
 import { ValidateTokenResponse__Output } from "../user_service/proto/userPackage/ValidateTokenResponse";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const USER_PORT = 50051;
 const USER_PROTO_FILE = "../user_service/proto/user.proto";
@@ -33,12 +36,16 @@ const bookGrpcObj = grpc.loadPackageDefinition(
 ) as unknown as BookProtoGrpcType;
 
 const userClient = new userGrpcObj.userPackage.UserService(
-  `0.0.0.0:${USER_PORT}`,
-  grpc.credentials.createInsecure()
+  `${process.env.GRPC_USER_IP}:${USER_PORT}`,
+  grpc.credentials.createInsecure(),
+  {
+    "grpc.max_receive_message_length": -1,
+    "grpc.max_send_message_length": -1,
+  }
 );
 
 const bookClient = new bookGrpcObj.bookPackage.BookService(
-  `0.0.0.0:${BOOK_PORT}`,
+  `${process.env.GRPC_BOOK_IP}:${BOOK_PORT}`,
   grpc.credentials.createInsecure()
 );
 
@@ -54,7 +61,10 @@ app.post("/signup", (req: Request, res: Response) => {
       err: grpc.ServiceError | null,
       response: SignupResponse__Output | undefined
     ) => {
+      console.log(111);
       if (err) {
+        console.log(111, err);
+
         console.error("Error calling gRPC Signup:", err.message);
         return res.status(500).json({ message: "Internal server error" });
       }

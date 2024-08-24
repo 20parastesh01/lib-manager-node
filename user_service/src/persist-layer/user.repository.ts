@@ -22,6 +22,8 @@ export class UserRepository {
       };
       return userDao;
     } catch (e) {
+      console.log("DATABASE ERROR ---------------", e);
+
       throw new UserException("failed to create user", 500);
     }
   }

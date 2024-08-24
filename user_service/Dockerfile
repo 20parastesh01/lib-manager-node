@@ -1,0 +1,11 @@
+FROM hub.hamdocker.ir/node:alpine
+
+WORKDIR /app/code
+
+COPY package*.json .
+
+RUN npm install
+
+COPY . .
+
+CMD [ "npm", "run", "user-server" ] 

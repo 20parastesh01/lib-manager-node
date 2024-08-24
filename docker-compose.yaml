@@ -1,0 +1,51 @@
+version: "3"
+
+services:
+  main-server:
+    build:
+      context: ./main_service
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file: ./main_service/.env.production
+    volumes:
+      - ./book_service/proto/:/app/book_service/proto/
+      - ./user_service/proto/:/app/user_service/proto/
+
+  user-service:
+    build:
+      context: ./user_service
+      dockerfile: Dockerfile
+    env_file: ./user_service/.env.production
+    depends_on:
+      - user-db
+    volumes:
+      - ./book_service/proto/:/app/book_service/proto/
+
+  book-service:
+    build:
+      context: ./book_service
+      dockerfile: Dockerfile
+    env_file: ./book_service/.env.production
+    depends_on:
+      - book-db
+
+  user-db:
+    image: hub.hamdocker.ir/mysql:latest
+    container_name: user-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: user-database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: some-password
+      MYSQL_ROOT_PASSWORD: root-password
+
+  book-db:
+    image: hub.hamdocker.ir/mysql:latest
+    container_name: book-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: book-database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: some-password
+      MYSQL_ROOT_PASSWORD: root-password

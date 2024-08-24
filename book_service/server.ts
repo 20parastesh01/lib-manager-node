@@ -46,14 +46,6 @@ function getServer() {
   const bookController = new BookController(bookService);
 
   server.addService(bookPackage.BookService.service, {
-    // Signup: async (call, callback) => {
-    //   const req = call.request as SignupRequest__Output;
-    //   const data = signupRequest.parse(req);
-    //   const fn: (input: typeof data) => CustomError | {} =
-    //     userController.signup;
-    //   handleRequest(call, callback)(data, fn);
-    // },
-
     CreateBook: async (call, callback) => {
       console.log("test");
       const req = call.request as CreateBookRequest__Output;

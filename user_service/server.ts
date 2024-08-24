@@ -29,7 +29,7 @@ function main() {
   initializeDatabase();
 
   server.bindAsync(
-    `0.0.0.0:${PORT}`,
+    `${process.env.GRPC_USER_IP}:${PORT}`,
     grpc.ServerCredentials.createInsecure(),
     (err, port) => {
       if (err) {
@@ -43,7 +43,10 @@ function main() {
 }
 
 function getServer() {
-  const server = new grpc.Server();
+  const server = new grpc.Server({
+    "grpc.max_receive_message_length": -1,
+    "grpc.max_send_message_length": -1,
+  });
 
   const userRepository = new UserRepository(AppDataSource);
   const authService = new AuthService(userRepository);
