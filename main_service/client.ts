@@ -63,10 +63,10 @@ app.post("/signup", (req: Request, res: Response) => {
     ) => {
       if (err) {
         console.error("Error calling gRPC Signup:", err.message);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(err.code).json({ message: err.message });
       }
       if (response && response.token) {
-        return res.status(200).json({ token: response.token });
+        return res.status(201).json({ token: response.token });
       } else {
         return res
           .status(500)
@@ -86,7 +86,7 @@ app.post("/login", async (req: Request, res: Response) => {
     ) => {
       if (err) {
         console.error("Error calling gRPC Login:", err.message);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(err.code).json({ message: err.message });
       }
       if (response && response.token) {
         return res.status(200).json({ token: response.token });
@@ -112,7 +112,7 @@ app.post("/createBook", (req: Request, res: Response) => {
     ) => {
       if (err) {
         console.error("Error calling gRPC create book:", err.message);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(err.code).json({ message: err.message });
       }
       if (response && response.userId) {
         addBook(name, author, publisher, description, response.userId);
@@ -139,10 +139,10 @@ app.post("/createBook", (req: Request, res: Response) => {
       ) => {
         if (err) {
           console.error("Error calling gRPC Login:", err.message);
-          return res.status(500).json({ message: "Internal server error" });
+          return res.status(err.code).json({ message: err.message });
         }
         if (response) {
-          return res.status(200).json(response);
+          return res.status(201).json(response);
         } else {
           return res
             .status(500)

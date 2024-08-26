@@ -65,6 +65,12 @@ function getServer() {
           });
         }
       } catch (e) {
+        if (e instanceof BookException) {
+          callback({
+            code: e.code,
+            message: e.message,
+          });
+        }
         callback({
           code: grpc.status.INTERNAL,
           message: "Internal server error",

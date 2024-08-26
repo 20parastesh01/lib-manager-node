@@ -69,6 +69,12 @@ function getServer() {
           callback(null, { token: accessTokenOrError });
         }
       } catch (e) {
+        if (e instanceof UserException) {
+          callback({
+            code: e.code,
+            message: e.message,
+          });
+        }
         callback({
           code: grpc.status.INTERNAL,
           message: "Internal server error",
@@ -90,6 +96,12 @@ function getServer() {
           callback(null, { token: accessTokenOrError });
         }
       } catch (e) {
+        if (e instanceof UserException) {
+          callback({
+            code: e.code,
+            message: e.message,
+          });
+        }
         callback({
           code: grpc.status.INTERNAL,
           message: "Internal server error",
@@ -110,6 +122,12 @@ function getServer() {
           callback(null, { userId: userIdOrError });
         }
       } catch (e) {
+        if (e instanceof UserException) {
+          callback({
+            code: e.code,
+            message: e.message,
+          });
+        }
         callback({
           code: grpc.status.INTERNAL,
           message: "Internal server error",
