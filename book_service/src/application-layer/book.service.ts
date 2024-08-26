@@ -1,12 +1,12 @@
+import { CreateBookRequest } from "../DTOs/create-book.dto";
 import { BookException } from "../exceptions/book.exception";
 import { BookRepositoryInterface } from "../persist-layer/book.repository.interface";
-import { BookDAO } from "./DAOs/book.dao";
-import { BookDTO } from "./DTOs/book.dto";
+import { Book } from "../persist-layer/models/book.model";
 
 export class BookService {
   constructor(private bookRepo: BookRepositoryInterface) {}
 
-  async createBook(data: BookDTO): Promise<BookDAO | BookException> {
+  async createBook(data: CreateBookRequest): Promise<Book | BookException> {
     try {
       const book = this.bookRepo.createBook(data);
       if (book instanceof BookException) return book;

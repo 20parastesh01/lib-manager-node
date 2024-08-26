@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { zodName } from "../../types/name";
+import { zodName } from "../types/name";
 export const createBookRequest = z.object({
   name: zodName,
   author: zodName,

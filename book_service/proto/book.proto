@@ -18,6 +18,7 @@ message CreateBookResponse {
     string name = 1;
     string author = 2;
     string publisher = 3;
-    string status = 4;
+    string addedBy = 4;
     string description = 5;
+    string status = 6;
 }

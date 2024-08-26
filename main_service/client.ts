@@ -61,10 +61,7 @@ app.post("/signup", (req: Request, res: Response) => {
       err: grpc.ServiceError | null,
       response: SignupResponse__Output | undefined
     ) => {
-      console.log(111);
       if (err) {
-        console.log(111, err);
-
         console.error("Error calling gRPC Signup:", err.message);
         return res.status(500).json({ message: "Internal server error" });
       }
@@ -100,32 +97,6 @@ app.post("/login", async (req: Request, res: Response) => {
       }
     }
   );
-
-  // const func = (email: string, password: string) => {
-  //   const func2 = <T, U>(
-  //     fn: (arg: T, callback: grpc.requestCallback<U>) => grpc.ClientUnaryCall
-  //   ) => {
-  //     console.log();
-
-  //     (val: T) => {
-  //       return new Promise((resolve, reject) => {
-  //         let result: U | undefined = undefined;
-  //         const a = fn(
-  //           val,
-  //           (err: grpc.ServiceError | null, response: U | undefined) => {
-  //             result = response;
-  //           }
-  //         );
-  //         a.on("status", () => resolve(result));
-  //       });
-  //     };
-  //   };
-  //   const b = func2(userClient.Login)({ email, password });
-  //   return b;
-  // };
-
-  // const a = await func(email, password);
-  // console.log("res: ", a);
 });
 
 app.post("/createBook", (req: Request, res: Response) => {
@@ -139,7 +110,6 @@ app.post("/createBook", (req: Request, res: Response) => {
       err: grpc.ServiceError | null,
       response: ValidateTokenResponse__Output | undefined
     ) => {
-      console.log(response);
       if (err) {
         console.error("Error calling gRPC create book:", err.message);
         return res.status(500).json({ message: "Internal server error" });

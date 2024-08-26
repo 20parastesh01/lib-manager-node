@@ -6,10 +6,9 @@ import { AppDataSource } from "./src/data-source";
 import { BookServiceHandlers } from "./proto/bookPackage/BookService";
 import { BookRepository } from "./src/persist-layer/book.repository";
 import { BookService } from "./src/application-layer/book.service";
-import { BookController } from "./src/controller-layer/book.controller";
 import { CreateBookRequest__Output } from "./proto/bookPackage/CreateBookRequest";
-import { createBookRequest } from "./src/controller-layer/requests/create-book.request";
 import { BookException } from "./src/exceptions/book.exception";
+import { createBookRequest } from "./src/DTOs/create-book.dto";
 
 const PORT = 50052;
 const PROTO_FILE = "./proto/book.proto";
@@ -43,22 +42,20 @@ function getServer() {
 
   const bookRepository = new BookRepository(AppDataSource);
   const bookService = new BookService(bookRepository);
-  const bookController = new BookController(bookService);
 
   server.addService(bookPackage.BookService.service, {
     CreateBook: async (call, callback) => {
-      console.log("test");
       const req = call.request as CreateBookRequest__Output;
       const data = createBookRequest.parse(req);
       try {
-        const bookOrError = await bookController.createBook(data);
+        const bookOrError = await bookService.createBook(data);
         if (bookOrError instanceof BookException) {
           callback({
-            code: grpc.status.INTERNAL,
+            code: bookOrError.code,
             message: bookOrError.message,
           });
         } else {
-          const book = bookOrError.data;
+          const book = bookOrError;
           callback(null, {
             name: book.name,
             author: book.author,

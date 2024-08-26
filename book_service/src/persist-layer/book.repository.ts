@@ -1,8 +1,8 @@
 import { DataSource, Repository } from "typeorm";
 import { BookEntity } from "./entities/book.entity";
-import { BookDAO } from "../application-layer/DAOs/book.dao";
 import { BookException } from "../exceptions/book.exception";
-import { BookDTO } from "../application-layer/DTOs/book.dto";
+import { Book } from "./models/book.model";
+import { CreateBookRequest } from "../DTOs/create-book.dto";
 
 export class BookRepository {
   private bookRepo: Repository<BookEntity>;
@@ -11,17 +11,10 @@ export class BookRepository {
     this.bookRepo = appDataSource.getRepository(BookEntity);
   }
 
-  async createBook(data: BookDTO): Promise<BookDAO | BookException> {
+  async createBook(data: CreateBookRequest): Promise<Book | BookException> {
     try {
       const bookEntity = await this.bookRepo.save({ ...data });
-      const bookDao = {
-        name: bookEntity.name,
-        author: bookEntity.author,
-        publisher: bookEntity.publisher,
-        status: bookEntity.status,
-        description: bookEntity.description,
-      };
-      return bookDao;
+      return bookEntity;
     } catch (e) {
       throw new BookException("failed to create book", 500);
     }

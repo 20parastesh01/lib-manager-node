@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Brand } from "../../utility/brand";
+import { Brand } from "../utility/brand";
 import { NonEmptyString } from "./non-empty-string";
 
 export type Name = Brand<NonEmptyString, "Name">;

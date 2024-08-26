@@ -1,8 +1,8 @@
-import { BookDAO } from "../application-layer/DAOs/book.dao";
-import { BookDTO } from "../application-layer/DTOs/book.dto";
+import { CreateBookRequest } from "../DTOs/create-book.dto";
 import { BookException } from "../exceptions/book.exception";
 import { BookRepository } from "./book.repository";
+import { Book } from "./models/book.model";
 
 export interface BookRepositoryInterface extends BookRepository {
-  createBook(data: BookDTO): Promise<BookDAO | BookException>;
+  createBook(data: CreateBookRequest): Promise<Book | BookException>;
 }
