@@ -12,6 +12,15 @@ export interface ProtoGrpcType {
     BookService: SubtypeConstructor<typeof grpc.Client, _bookPackage_BookServiceClient> & { service: _bookPackage_BookServiceDefinition }
     CreateBookRequest: MessageTypeDefinition
     CreateBookResponse: MessageTypeDefinition
+    GetBookRequest: MessageTypeDefinition
+    GetBookResponse: MessageTypeDefinition
+    GetBooksRequest: MessageTypeDefinition
+    GetBooksResponse: MessageTypeDefinition
+  }
+  google: {
+    protobuf: {
+      Empty: MessageTypeDefinition
+    }
   }
 }
 

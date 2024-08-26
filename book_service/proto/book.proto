@@ -2,8 +2,12 @@ syntax = "proto3";
 
 package bookPackage;
 
+import "google/protobuf/empty.proto";
+
 service BookService {
     rpc CreateBook(CreateBookRequest) returns (CreateBookResponse) {};
+    rpc GetBook(google.protobuf.Empty) returns(GetBookResponse) {};
+    rpc GetBooks(google.protobuf.Empty) returns (GetBooksResponse) {};
 }
 
 message CreateBookRequest {
@@ -21,4 +25,25 @@ message CreateBookResponse {
     string addedBy = 4;
     string description = 5;
     string status = 6;
+}
+
+message GetBookRequest{
+
+}
+
+message GetBookResponse {
+    string name = 1;
+    string author = 2;
+    string publisher = 3;
+    string addedBy = 4;
+    string description = 5;
+    string status = 6;
+}
+
+message GetBooksRequest{
+
+}
+
+message GetBooksResponse {
+    repeated GetBookResponse books = 1;
 }

@@ -19,4 +19,9 @@ export class BookRepository {
       throw new BookException("failed to create book", 500);
     }
   }
+
+  async getBooks(): Promise<Book[] | null> {
+    const books = await this.bookRepo.find();
+    return books;
+  }
 }

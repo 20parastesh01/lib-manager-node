@@ -10,6 +10,7 @@ import { CreateBookResponse__Output } from "../book_service/proto/bookPackage/Cr
 import { ValidationException } from "./exceptions/ValidationException";
 import { ValidateTokenResponse__Output } from "../user_service/proto/userPackage/ValidateTokenResponse";
 import dotenv from "dotenv";
+import { GetBooksResponse__Output } from "../book_service/proto/bookPackage/GetBooksResponse";
 
 dotenv.config();
 
@@ -138,11 +139,58 @@ app.post("/createBook", (req: Request, res: Response) => {
         response: CreateBookResponse__Output | undefined
       ) => {
         if (err) {
-          console.error("Error calling gRPC Login:", err.message);
+          console.error("Error calling gRPC create book:", err.message);
           return res.status(err.code).json({ message: err.message });
         }
         if (response) {
           return res.status(201).json(response);
+        } else {
+          return res
+            .status(500)
+            .json({ message: "No response or token from gRPC service" });
+        }
+      }
+    );
+  };
+});
+
+app.get("/getBooks", (req: Request, res: Response) => {
+  const token = req.header("Authorization");
+  if (!token) return new ValidationException("Unauthorized", 401);
+
+  userClient.ValidateToken(
+    { token },
+    (
+      err: grpc.ServiceError | null,
+      response: ValidateTokenResponse__Output | undefined
+    ) => {
+      if (err) {
+        console.error("Error calling gRPC get books:", err.message);
+        return res.status(err.code).json({ message: err.message });
+      }
+      if (response) {
+        getBooks();
+      } else {
+        return res
+          .status(500)
+          .json({ message: "No response from gRPC service" });
+      }
+    }
+  );
+
+  const getBooks = () => {
+    bookClient.GetBooks(
+      {},
+      (
+        err: grpc.ServiceError | null,
+        response: GetBooksResponse__Output | undefined
+      ) => {
+        if (err) {
+          console.error("Error calling gRPC get books:", err.message);
+          return res.status(err.code).json({ message: err.message });
+        }
+        if (response) {
+          return res.status(201).json(response.books);
         } else {
           return res
             .status(500)

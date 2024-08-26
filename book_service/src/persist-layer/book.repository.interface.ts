@@ -5,4 +5,5 @@ import { Book } from "./models/book.model";
 
 export interface BookRepositoryInterface extends BookRepository {
   createBook(data: CreateBookRequest): Promise<Book | BookException>;
+  getBooks(): Promise<Book[] | null>;
 }

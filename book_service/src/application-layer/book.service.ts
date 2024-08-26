@@ -17,4 +17,14 @@ export class BookService {
     }
     return new BookException("unexpected error", 500);
   }
+
+  async getBooks(): Promise<Book[] | BookException> {
+    try {
+      const books = await this.bookRepo.getBooks();
+      if (!books) return new BookException("books not found", 404);
+      return books;
+    } catch (e) {
+      throw new BookException("failed to get books", 500);
+    }
+  }
 }

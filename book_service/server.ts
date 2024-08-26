@@ -77,6 +77,42 @@ function getServer() {
         });
       }
     },
+
+    GetBooks: async (call, callback) => {
+      try {
+        const booksOrError = await bookService.getBooks();
+        if (booksOrError instanceof BookException) {
+          callback({
+            code: booksOrError.code,
+            message: booksOrError.message,
+          });
+        } else {
+          const books = booksOrError.map((book) => ({
+            name: book.name,
+            author: book.author,
+            publisher: book.publisher,
+            status: book.status,
+            addedBy: book.addedBy,
+            description: book.description,
+          }));
+
+          callback(null, { books });
+        }
+      } catch (e) {
+        if (e instanceof BookException) {
+          callback({
+            code: e.code,
+            message: e.message,
+          });
+        }
+        callback({
+          code: grpc.status.INTERNAL,
+          message: "Internal server error",
+        });
+      }
+    },
+
+    GetBook: (call, callback) => {},
   } as BookServiceHandlers);
 
   return server;
