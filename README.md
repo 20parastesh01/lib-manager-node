@@ -77,4 +77,6 @@ So, I tried increasing the gRPC response and request length:
 
 It seemed like -1 meant unlimited, but I also tried other values, yet the problem persisted. I even considered just stringifying the payload instead of using JWT, but the problem still remained! Therefore, you are not able to send requests when Docker Compose is up.
 
+Finally, by changing the Node.js version in the Dockerfiles and using a non-Alpine image, I fixed the problem.
+
 During the project, I encountered questions like: Should I use a single Git repo or multiple repos, one for each project? Well, a monorepo seemed easier to handle and share. I also searched for the most common approaches, and it turned out that a monorepo was the most common. Another challenge was understanding the concept of auth middleware. At the end I decided to send request to user server and then book server for authorization process.

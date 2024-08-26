@@ -1,4 +1,4 @@
-FROM hub.hamdocker.ir/node:alpine
+FROM hub.hamdocker.ir/node:18.17.0
 
 WORKDIR /app/code
 
