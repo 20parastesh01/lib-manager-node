@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { Brand } from "../../utility/brand";
 import { NonEmptyString } from "./non-empty-string";
+import { Brand } from "../utility/brand";
 
 export type InputPassword = Brand<NonEmptyString, "InputPassword">;
 

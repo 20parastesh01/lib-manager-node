@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { zodToken } from "../../types/token";
+import { zodToken } from "../types/token";
 
 export const validateTokenRequest = z.object({
   token: zodToken,

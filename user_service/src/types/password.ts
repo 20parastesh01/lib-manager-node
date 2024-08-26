@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { Brand } from "../../utility/brand";
 import { Hashed, isHashed } from "./hash";
+import { Brand } from "../utility/brand";
 
 export type Password = Brand<Hashed, "Password">;
 

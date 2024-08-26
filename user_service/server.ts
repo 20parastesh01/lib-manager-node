@@ -6,14 +6,15 @@ import { UserServiceHandlers } from "./proto/userPackage/UserService";
 import { AppDataSource } from "./src/data-source";
 import { SignupRequest__Output } from "./proto/userPackage/SignupRequest";
 import { UserRepository } from "./src/persist-layer/user.repository";
-import { AuthService } from "./src/application-layer/auth.service";
-import { UserController } from "./src/controller/user.controller";
 import { UserException } from "./src/exceptions/user.exception";
-import { signupRequest } from "./src/controller/requests/signup.request";
-import { loginRequest } from "./src/controller/requests/login.request";
+import { signupRequest } from "./src/DTOs/signup.dto";
+import { loginRequest } from "./src/DTOs/login.dto";
 import { LoginRequest__Output } from "./proto/userPackage/LoginRequest";
 import { ValidateTokenReqeust__Output } from "./proto/userPackage/ValidateTokenReqeust";
-import { validateTokenRequest } from "./src/controller/requests/validate-token.request";
+import { validateTokenRequest } from "./src/DTOs/validate-token.dto";
+import { UserService } from "./src/application-layer/user.service";
+import { JWTService } from "./src/application-layer/jwt.service";
+import { HashService } from "./src/application-layer/hash.service";
 
 const PORT = 50051;
 const PROTO_FILE = "./proto/user.proto";
@@ -49,22 +50,23 @@ function getServer() {
   });
 
   const userRepository = new UserRepository(AppDataSource);
-  const authService = new AuthService(userRepository);
-  const userController = new UserController(authService);
+  const jwtService = new JWTService();
+  const hashSerive = new HashService();
+  const userService = new UserService(userRepository, jwtService, hashSerive);
 
   server.addService(userPackage.UserService.service, {
     Signup: async (call, callback) => {
       const req = call.request as SignupRequest__Output;
       const data = signupRequest.parse(req);
       try {
-        const accessTokenOrError = await userController.signup(data);
+        const accessTokenOrError = await userService.signup(data);
         if (accessTokenOrError instanceof UserException) {
           callback({
-            code: grpc.status.INTERNAL,
+            code: accessTokenOrError.code,
             message: accessTokenOrError.message,
           });
         } else {
-          callback(null, { token: accessTokenOrError.accessToken });
+          callback(null, { token: accessTokenOrError });
         }
       } catch (e) {
         callback({
@@ -78,14 +80,14 @@ function getServer() {
       const req = call.request as LoginRequest__Output;
       const data = loginRequest.parse(req);
       try {
-        const accessTokenOrError = await userController.login(data);
+        const accessTokenOrError = await userService.login(data);
         if (accessTokenOrError instanceof UserException) {
           callback({
-            code: grpc.status.INTERNAL,
+            code: accessTokenOrError.code,
             message: accessTokenOrError.message,
           });
         } else {
-          callback(null, { token: accessTokenOrError.accessToken });
+          callback(null, { token: accessTokenOrError });
         }
       } catch (e) {
         callback({
@@ -98,10 +100,10 @@ function getServer() {
       const req = call.request as ValidateTokenReqeust__Output;
       const data = validateTokenRequest.parse(req);
       try {
-        const userIdOrError = await userController.validateToken(data);
+        const userIdOrError = await userService.validateToken(data);
         if (userIdOrError instanceof UserException) {
           callback({
-            code: grpc.status.INTERNAL,
+            code: userIdOrError.code,
             message: userIdOrError.message,
           });
         } else {

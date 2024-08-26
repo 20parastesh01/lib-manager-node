@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Brand } from "../../utility/brand";
+import { Brand } from "../utility/brand";
 
 export type Email = Brand<string, "Email">;
 

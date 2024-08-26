@@ -1,10 +1,13 @@
-import { UserDAO } from "../application-layer/DAOs/user.dao";
-import { UserWithPass } from "../application-layer/DAOs/userwithpass.dao";
-import { UserDTO } from "../application-layer/DTOs/user.dto";
 import { UserException } from "../exceptions/user.exception";
 import { Email } from "../types/email";
 import { UserEntity } from "./entities/user.entity";
-import { DataSource, In, Not, Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
+import {
+  toUserWithoutPassword,
+  User,
+  UserWithoutPassword,
+} from "./models/user.model";
+import { CreateUserDTO } from "../DTOs/create-user.dto";
 
 export class UserRepository {
   private userRepo: Repository<UserEntity>;
@@ -13,36 +16,20 @@ export class UserRepository {
     this.userRepo = appDataSource.getRepository(UserEntity);
   }
 
-  async createUser(data: UserDTO): Promise<UserDAO | UserException> {
+  async createUser(
+    data: CreateUserDTO
+  ): Promise<UserWithoutPassword | UserException> {
     try {
       const userEntity = await this.userRepo.save({ ...data });
-      const userDao = {
-        name: userEntity.name,
-        email: userEntity.email,
-      };
+      const userDao = toUserWithoutPassword(userEntity);
       return userDao;
     } catch (e) {
-      console.log("DATABASE ERROR ---------------", e);
-
-      throw new UserException("failed to create user", 500);
+      return new UserException("failed to create user", 500);
     }
   }
 
-  async findByEmail(email: Email): Promise<UserWithPass | UserException> {
+  async findByEmail(email: Email): Promise<User | null> {
     const userEntity = await this.userRepo.findOneBy({ email });
-    if (!userEntity) throw new UserException("failed to find user", 500);
-    const userWithPass = {
-      name: userEntity.name,
-      email: userEntity.email,
-      password: userEntity.password,
-    };
-    return userWithPass;
-  }
-
-  async findIdByEmail(email: Email): Promise<string | UserException> {
-    const userEntity = await this.userRepo.findOneBy({ email });
-    if (!userEntity) throw new UserException("failed to find user", 500);
-    const userId = userEntity.id;
-    return userId;
+    return userEntity ?? null;
   }
 }
