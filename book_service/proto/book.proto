@@ -36,7 +36,7 @@ message GetBookResponse {
     string author = 2;
     string publisher = 3;
     string addedBy = 4;
-    string description = 5;
+    optional string description = 5;
     string status = 6;
 }
 

@@ -8,6 +8,7 @@ import {
   UserWithoutPassword,
 } from "./models/user.model";
 import { CreateUserDTO } from "../DTOs/create-user.dto";
+import { UpdateProfileDTO } from "../DTOs/update-profile.dto";
 
 export class UserRepository {
   private userRepo: Repository<UserEntity>;
@@ -31,5 +32,23 @@ export class UserRepository {
   async findByEmail(email: Email): Promise<User | null> {
     const userEntity = await this.userRepo.findOneBy({ email });
     return userEntity ?? null;
+  }
+
+  async findById(id: string): Promise<User | null> {
+    const userEntity = await this.userRepo.findOneBy({ id });
+    return userEntity ?? null;
+  }
+
+  async update(
+    userId: string,
+    data: UpdateProfileDTO
+  ): Promise<UserWithoutPassword | UserException> {
+    try {
+      await this.userRepo.save({ id: userId, ...data });
+      const user = await this.userRepo.findOneByOrFail({ id: userId });
+      return toUserWithoutPassword(user);
+    } catch (e) {
+      throw new UserException("failed to update user profile", 500);
+    }
   }
 }

@@ -9,10 +9,14 @@ type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> 
 
 export interface ProtoGrpcType {
   userPackage: {
+    GetProfileRequest: MessageTypeDefinition
+    GetProfileResponse: MessageTypeDefinition
     LoginRequest: MessageTypeDefinition
     LoginResponse: MessageTypeDefinition
     SignupRequest: MessageTypeDefinition
     SignupResponse: MessageTypeDefinition
+    UpdateProfileRequest: MessageTypeDefinition
+    UpdateProfileResponse: MessageTypeDefinition
     UserService: SubtypeConstructor<typeof grpc.Client, _userPackage_UserServiceClient> & { service: _userPackage_UserServiceDefinition }
     ValidateTokenReqeust: MessageTypeDefinition
     ValidateTokenResponse: MessageTypeDefinition

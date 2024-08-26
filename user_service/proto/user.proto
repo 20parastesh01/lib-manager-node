@@ -6,6 +6,8 @@ service UserService {
     rpc Signup(SignupRequest) returns (SignupResponse) {};
     rpc Login(LoginRequest) returns (LoginResponse) {};
     rpc ValidateToken(ValidateTokenReqeust) returns (ValidateTokenResponse) {};
+    rpc GetProfile(GetProfileRequest) returns (GetProfileResponse) {};
+    rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse) {};
 }
 
 message SignupRequest {
@@ -33,4 +35,24 @@ message ValidateTokenReqeust {
 
 message ValidateTokenResponse {
     string userId = 1;
+}
+
+message GetProfileRequest {
+    string token = 1;
+}
+
+message GetProfileResponse {
+    string email = 1;
+    string name = 2;
+}
+
+message UpdateProfileRequest {
+    string token = 1;
+    optional string email = 2;
+    optional string name = 3;
+}
+
+message UpdateProfileResponse {
+    string email = 1;
+    string name = 2;
 }

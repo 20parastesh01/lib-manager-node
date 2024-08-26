@@ -8,6 +8,7 @@ export interface GetBookResponse {
   'addedBy'?: (string);
   'description'?: (string);
   'status'?: (string);
+  '_description'?: "description";
 }
 
 export interface GetBookResponse__Output {

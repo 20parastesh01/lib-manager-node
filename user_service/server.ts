@@ -15,6 +15,10 @@ import { validateTokenRequest } from "./src/DTOs/validate-token.dto";
 import { UserService } from "./src/application-layer/user.service";
 import { JWTService } from "./src/application-layer/jwt.service";
 import { HashService } from "./src/application-layer/hash.service";
+import { UpdateProfileRequest__Output } from "./proto/userPackage/UpdateProfileRequest";
+import { updateProfileDTO } from "./src/DTOs/update-profile.dto";
+import { Token } from "./src/types/token";
+import { GetProfileRequest__Output } from "./proto/userPackage/GetProfileRequest";
 
 const PORT = 50051;
 const PROTO_FILE = "./proto/user.proto";
@@ -120,6 +124,75 @@ function getServer() {
           });
         } else {
           callback(null, { userId: userIdOrError });
+        }
+      } catch (e) {
+        if (e instanceof UserException) {
+          callback({
+            code: e.code,
+            message: e.message,
+          });
+        }
+        callback({
+          code: grpc.status.INTERNAL,
+          message: "Internal server error",
+        });
+      }
+    },
+
+    UpdateProfile: async (call, callback) => {
+      const req = call.request as UpdateProfileRequest__Output;
+      const data = updateProfileDTO.parse({ email: req.email, name: req.name });
+      try {
+        const user = await jwtService.verifyJwt(req.token as Token);
+        if (user instanceof UserException) return user;
+
+        const updatedUserOrError = await userService.updateProfile(
+          user.id,
+          data
+        );
+        if (updatedUserOrError instanceof UserException) {
+          callback({
+            code: updatedUserOrError.code,
+            message: updatedUserOrError.message,
+          });
+        } else {
+          callback(null, {
+            email: updatedUserOrError.email,
+            name: updatedUserOrError.name,
+          });
+        }
+      } catch (e) {
+        if (e instanceof UserException) {
+          callback({
+            code: e.code,
+            message: e.message,
+          });
+        }
+        callback({
+          code: grpc.status.INTERNAL,
+          message: "Internal server error",
+        });
+      }
+    },
+
+    GetProfile: async (call, callback) => {
+      const req = call.request as GetProfileRequest__Output;
+
+      try {
+        const user = await jwtService.verifyJwt(req.token as Token);
+        if (user instanceof UserException) return user;
+
+        const userOrError = await userService.getProfile(user.id);
+        if (userOrError instanceof UserException) {
+          callback({
+            code: userOrError.code,
+            message: userOrError.message,
+          });
+        } else {
+          callback(null, {
+            email: userOrError.email,
+            name: userOrError.name,
+          });
         }
       } catch (e) {
         if (e instanceof UserException) {

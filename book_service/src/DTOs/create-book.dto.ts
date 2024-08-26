@@ -5,7 +5,7 @@ export const createBookRequest = z.object({
   author: zodName,
   publisher: zodName,
   addedBy: z.string(),
-  description: z.string(),
+  description: z.string().optional(),
 });
 
 export type CreateBookRequest = z.infer<typeof createBookRequest>;

@@ -11,6 +11,8 @@ import { ValidationException } from "./exceptions/ValidationException";
 import { ValidateTokenResponse__Output } from "../user_service/proto/userPackage/ValidateTokenResponse";
 import dotenv from "dotenv";
 import { GetBooksResponse__Output } from "../book_service/proto/bookPackage/GetBooksResponse";
+import { UpdateProfileResponse__Output } from "../user_service/proto/userPackage/UpdateProfileResponse";
+import { GetProfileResponse__Output } from "../user_service/proto/userPackage/GetProfileResponse";
 
 dotenv.config();
 
@@ -190,7 +192,7 @@ app.get("/getBooks", (req: Request, res: Response) => {
           return res.status(err.code).json({ message: err.message });
         }
         if (response) {
-          return res.status(201).json(response.books);
+          return res.status(200).json(response.books);
         } else {
           return res
             .status(500)
@@ -199,6 +201,53 @@ app.get("/getBooks", (req: Request, res: Response) => {
       }
     );
   };
+});
+
+app.patch("/profile/update", (req: Request, res: Response) => {
+  const { name, email } = req.body;
+  const token = req.header("Authorization");
+  userClient.UpdateProfile(
+    { name, email, token },
+    (
+      err: grpc.ServiceError | null,
+      response: UpdateProfileResponse__Output | undefined
+    ) => {
+      if (err) {
+        console.error("Error calling gRPC update profile:", err.message);
+        return res.status(err.code).json({ message: err.message });
+      }
+      if (response) {
+        return res.status(200).json({ data: response });
+      } else {
+        return res
+          .status(500)
+          .json({ message: "No response or token from gRPC service" });
+      }
+    }
+  );
+});
+
+app.get("/profile/get", (req: Request, res: Response) => {
+  const token = req.header("Authorization");
+  userClient.GetProfile(
+    { token },
+    (
+      err: grpc.ServiceError | null,
+      response: GetProfileResponse__Output | undefined
+    ) => {
+      if (err) {
+        console.error("Error calling gRPC get profile:", err.message);
+        return res.status(err.code).json({ message: err.message });
+      }
+      if (response) {
+        return res.status(200).json({ data: response });
+      } else {
+        return res
+          .status(500)
+          .json({ message: "No response or token from gRPC service" });
+      }
+    }
+  );
 });
 
 app.listen(port, () => {

@@ -10,6 +10,7 @@ import {
   toUserWithoutPassword,
   UserWithoutPassword,
 } from "../persist-layer/models/user.model";
+import { UpdateProfileDTO } from "../DTOs/update-profile.dto";
 
 export class UserService {
   constructor(
@@ -60,6 +61,45 @@ export class UserService {
         return e;
       }
       return new UserException("Unexpected error", 500);
+    }
+  }
+
+  async getProfile(
+    userId: string
+  ): Promise<UserWithoutPassword | UserException> {
+    try {
+      const user = await this.userRepo.findById(userId);
+      if (!user) return new UserException("user not found", 404);
+      return user;
+    } catch (e) {
+      if (e instanceof UserException) {
+        return e;
+      }
+      return new UserException("Unexpected error", 500);
+    }
+  }
+
+  async updateProfile(
+    userId: string,
+    data: UpdateProfileDTO
+  ): Promise<UserWithoutPassword | UserException> {
+    try {
+      let filteredData: Partial<UpdateProfileDTO> = {};
+      if (data.email !== undefined) {
+        filteredData.email = data.email;
+      }
+      if (data.name !== undefined) {
+        filteredData.name = data.name;
+      }
+
+      const user = await this.userRepo.update(userId, filteredData);
+      if (user instanceof UserException) return user;
+      return user;
+    } catch (e) {
+      if (e instanceof UserException) {
+        return e;
+      }
+      throw new UserException("failed to update", 500);
     }
   }
 
