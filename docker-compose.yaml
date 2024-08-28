@@ -18,7 +18,8 @@ services:
       dockerfile: Dockerfile
     env_file: ./user_service/.env.production
     depends_on:
-      - user-db
+      user-db:
+        condition: service_healthy
     volumes:
       - ./book_service/proto/:/app/book_service/proto/
 
@@ -28,7 +29,8 @@ services:
       dockerfile: Dockerfile
     env_file: ./book_service/.env.production
     depends_on:
-      - book-db
+      book-db:
+        condition: service_healthy
 
   user-db:
     image: hub.hamdocker.ir/mysql:latest
@@ -39,6 +41,10 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: some-password
       MYSQL_ROOT_PASSWORD: root-password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
   book-db:
     image: hub.hamdocker.ir/mysql:latest
@@ -49,3 +55,7 @@ services:
       MYSQL_USER: user
       MYSQL_PASSWORD: some-password
       MYSQL_ROOT_PASSWORD: root-password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
