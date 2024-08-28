@@ -1,5 +1,6 @@
 # Project Overview
 
+This is a Library Management system built using microservices connected with gRPC.
 The project consists of three directories:
 
 - **Main-service** (acting as API Gateway and gRPC client)
@@ -12,9 +13,8 @@ I also wanted to include two more services: an Admin service and a Borrow servic
 
 In the `user-service` and `book-service` directories, you can find a `server.ts` file. In the `main-service` directory, there is a `client.ts` file.
 
-The user and book services contain three main directories:
+The user and book services contain two main directories:
 
-- **Controller-layer**
 - **Business-layer**
 - **Persist-layer**
 
@@ -35,6 +35,14 @@ The authentication mechanism uses JWT and is implemented through the headers of 
 2. Run `docker-compose build`.
 3. Run `docker-compose up -d`.
 
+Please wait until you see :
+
+express is listening on port 3000 .
+
+Your user server has started on port 50051 .
+
+Your user server has started on port 50052 .
+
 ### To Run the Code Locally
 
 1. Create your own `.env` file.
@@ -49,7 +57,7 @@ The authentication mechanism uses JWT and is implemented through the headers of 
 
 ## Challenges
 
-At the beginning of the project, I had no idea what microservices were, nor what gRPC was. I researched to understand these concepts and ended up designing three separate Laravel projects as my services: `user-service`, `book-service`, and `admin-service`. The reason I chose Laravel was that, given the short time frame and the need to learn a new concept, I could write code faster with it.
+1. At the beginning of the project, I had no idea what microservices were, nor what gRPC was. I researched to understand these concepts and ended up designing three separate Laravel projects as my services: `user-service`, `book-service`, and `admin-service`. The reason I chose Laravel was that, given the short time frame and the need to learn a new concept, I could write code faster with it.
 
 I dockerized each project, set up the test environment, and developed APIs for users. Here, you can see the incomplete code:
 
@@ -66,7 +74,9 @@ It was at this moment that I decided to restart the project, even though I only 
 - [https://medium.com/@satishios25/grpc-communication-between-micro-services-in-node-js-express-5a5c31ff8b6b](https://medium.com/@satishios25/grpc-communication-between-micro-services-in-node-js-express-5a5c31ff8b6b)
 - [https://www.youtube.com/watch?v=0cxEVcALoxc](https://www.youtube.com/watch?v=0cxEVcALoxc)
 
-Another big challenge I faced was that after dockerizing the project, I received this error from gRPC when sending a signup request: `"length" is outside of buffer bounds.` I didn’t have this problem when running my tests locally.
+2. I had problem finding a good approach for using auth middleware in microservices while they are connected with gRPC. One option was to use user sevice as both the server for user service and as the client for all of the services. At the end I decided to send requests to user server from the client to authenticate the user. I am still not sure which one is a better approach.
+
+3. A big challenge I faced was that after dockerizing the project, I received this error from gRPC when sending a signup request: `"length" is outside of buffer bounds.` I didn’t have this problem when running my tests locally.
 
 So, I tried increasing the gRPC response and request length:
 
@@ -75,8 +85,10 @@ So, I tried increasing the gRPC response and request length:
 "grpc.max_send_message_length": -1
 ```
 
-It seemed like -1 meant unlimited, but I also tried other values, yet the problem persisted. I even considered just stringifying the payload instead of using JWT, but the problem still remained! Therefore, you are not able to send requests when Docker Compose is up.
+It seemed like -1 meant unlimited, but I also tried other values, yet the problem persisted. I even considered just stringifying the payload instead of using JWT, but the problem still remained! Therefore, I was not able to send requests when Docker Compose was up.
+Finally, by changing the Node.js version in the Dockerfiles and using a non-Alpine image, the problem was fixed.
 
-Finally, by changing the Node.js version in the Dockerfiles and using a non-Alpine image, I fixed the problem.
+4. After a while, I faced aother challenge with Docker Compose:
+   For some reason, database initialization was taking more time, so when the services were about to start, the databases hadn't been fully initialized yet. I tried adding health checks for the database services in docker-compose.yaml file.
 
-During the project, I encountered questions like: Should I use a single Git repo or multiple repos, one for each project? Well, a monorepo seemed easier to handle and share. I also searched for the most common approaches, and it turned out that a monorepo was the most common. Another challenge was understanding the concept of auth middleware. At the end I decided to send request to user server and then book server for authorization process.
+During the project, I encountered questions like: Should I use a single Git repo or multiple repos, one for each project? Well, a monorepo seemed easier to handle and share. I also searched for the most common approaches, and it turned out that a monorepo was the most common.
