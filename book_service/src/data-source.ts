@@ -3,6 +3,7 @@ import dotenv from "dotenv-flow";
 dotenv.config({ path: process.cwd() });
 import { DataSource } from "typeorm";
 import { BookEntity } from "./persist-layer/entities/book.entity";
+import { BorrowEntity } from "./persist-layer/entities/borrow.entity";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -12,7 +13,7 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
   logging: false,
-  entities: [BookEntity],
+  entities: [BookEntity, BorrowEntity],
   migrations: ["./src/migrations/*.ts"],
   synchronize: true,
 });

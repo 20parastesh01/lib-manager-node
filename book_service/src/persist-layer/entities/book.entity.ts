@@ -22,6 +22,9 @@ export class BookEntity {
   @Column({ type: "enum", enum: BookStatus, default: BookStatus.AVAILABLE })
   status!: BookStatus;
 
-  @Column()
+  @Column({
+    type: "text",
+    nullable: true,
+  })
   description?: string;
 }

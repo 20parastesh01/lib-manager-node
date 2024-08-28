@@ -13,6 +13,7 @@ import dotenv from "dotenv";
 import { GetBooksResponse__Output } from "../book_service/proto/bookPackage/GetBooksResponse";
 import { UpdateProfileResponse__Output } from "../user_service/proto/userPackage/UpdateProfileResponse";
 import { GetProfileResponse__Output } from "../user_service/proto/userPackage/GetProfileResponse";
+import { BorrowBookResponse__Output } from "../book_service/proto/bookPackage/BorrowBookResponse";
 
 dotenv.config();
 
@@ -248,6 +249,55 @@ app.get("/profile/get", (req: Request, res: Response) => {
       }
     }
   );
+});
+
+app.post("/books/:bookId/borrow", (req: Request, res: Response) => {
+  const { returnDate } = req.body;
+  const bookId = req.params.bookId;
+  const token = req.header("Authorization");
+  if (!token) return new ValidationException("Unauthorized", 401);
+
+  userClient.ValidateToken(
+    { token },
+    (
+      err: grpc.ServiceError | null,
+      response: ValidateTokenResponse__Output | undefined
+    ) => {
+      if (err) {
+        console.error("Error calling gRPC borrow book:", err.message);
+        return res.status(err.code).json({ message: err.message });
+      }
+      if (response && response.userId) {
+        borrowBook(bookId, returnDate, response.userId);
+      } else {
+        return res
+          .status(500)
+          .json({ message: "No response from gRPC service" });
+      }
+    }
+  );
+
+  const borrowBook = (bookId: string, returnDate: string, userId: string) => {
+    bookClient.BorrowBook(
+      { borrowedBy: userId, bookId, returnDate },
+      (
+        err: grpc.ServiceError | null,
+        response: BorrowBookResponse__Output | undefined
+      ) => {
+        if (err) {
+          console.error("Error calling gRPC borrow book:", err.message);
+          return res.status(err.code).json({ message: err.message });
+        }
+        if (response) {
+          return res.status(201).json(response);
+        } else {
+          return res
+            .status(500)
+            .json({ message: "No response or token from gRPC service" });
+        }
+      }
+    );
+  };
 });
 
 app.listen(port, () => {

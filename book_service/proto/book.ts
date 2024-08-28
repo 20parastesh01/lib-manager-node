@@ -10,6 +10,8 @@ type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> 
 export interface ProtoGrpcType {
   bookPackage: {
     BookService: SubtypeConstructor<typeof grpc.Client, _bookPackage_BookServiceClient> & { service: _bookPackage_BookServiceDefinition }
+    BorrowBookRequest: MessageTypeDefinition
+    BorrowBookResponse: MessageTypeDefinition
     CreateBookRequest: MessageTypeDefinition
     CreateBookResponse: MessageTypeDefinition
     GetBookRequest: MessageTypeDefinition

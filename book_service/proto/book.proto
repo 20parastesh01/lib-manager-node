@@ -8,6 +8,7 @@ service BookService {
     rpc CreateBook(CreateBookRequest) returns (CreateBookResponse) {};
     rpc GetBook(google.protobuf.Empty) returns(GetBookResponse) {};
     rpc GetBooks(google.protobuf.Empty) returns (GetBooksResponse) {};
+    rpc BorrowBook(BorrowBookRequest) returns (BorrowBookResponse) {}
 }
 
 message CreateBookRequest {
@@ -25,6 +26,7 @@ message CreateBookResponse {
     string addedBy = 4;
     string description = 5;
     string status = 6;
+    string id = 7;
 }
 
 message GetBookRequest{
@@ -38,6 +40,7 @@ message GetBookResponse {
     string addedBy = 4;
     optional string description = 5;
     string status = 6;
+    string id = 7;
 }
 
 message GetBooksRequest{
@@ -46,4 +49,17 @@ message GetBooksRequest{
 
 message GetBooksResponse {
     repeated GetBookResponse books = 1;
+}
+
+message BorrowBookRequest {
+    string borrowedBy = 1;
+    string bookId = 2;
+    string returnDate = 3;
+}
+  
+message BorrowBookResponse {
+    string bookName = 1;
+    string returnDate = 2;
+    string createdAt = 3;
+    string id = 4;
 }

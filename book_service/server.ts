@@ -9,6 +9,12 @@ import { BookService } from "./src/application-layer/book.service";
 import { CreateBookRequest__Output } from "./proto/bookPackage/CreateBookRequest";
 import { BookException } from "./src/exceptions/book.exception";
 import { createBookRequest } from "./src/DTOs/create-book.dto";
+import { BorrowRepository } from "./src/persist-layer/borrow.repository";
+import { BorrowService } from "./src/application-layer/borrow.service";
+import { BorrowBookRequest__Output } from "./proto/bookPackage/BorrowBookRequest";
+import { borrowBookDTO } from "./src/DTOs/borrow-book.dto";
+import { BorrowException } from "./src/exceptions/borrow.exception";
+import { borrowBookRequest } from "./src/DTOs/borrow-book.request";
 
 const PORT = 50052;
 const PROTO_FILE = "./proto/book.proto";
@@ -43,25 +49,29 @@ function getServer() {
   const bookRepository = new BookRepository(AppDataSource);
   const bookService = new BookService(bookRepository);
 
+  const borrowRepository = new BorrowRepository(AppDataSource);
+  const borrowService = new BorrowService(borrowRepository, bookRepository);
+
   server.addService(bookPackage.BookService.service, {
     CreateBook: async (call, callback) => {
       const req = call.request as CreateBookRequest__Output;
       const data = createBookRequest.parse(req);
       try {
-        const bookOrError = await bookService.createBook(data);
-        if (bookOrError instanceof BookException) {
+        const borrowOrError = await bookService.createBook(data);
+        if (borrowOrError instanceof BookException) {
           callback({
-            code: bookOrError.code,
-            message: bookOrError.message,
+            code: borrowOrError.code,
+            message: borrowOrError.message,
           });
         } else {
-          const book = bookOrError;
+          const book = borrowOrError;
           callback(null, {
             name: book.name,
             author: book.author,
             publisher: book.publisher,
             status: book.status,
             description: book.description,
+            id: book.id,
           });
         }
       } catch (e) {
@@ -94,12 +104,49 @@ function getServer() {
             status: book.status,
             addedBy: book.addedBy,
             description: book.description,
+            id: book.id,
           }));
 
           callback(null, { books });
         }
       } catch (e) {
         if (e instanceof BookException) {
+          callback({
+            code: e.code,
+            message: e.message,
+          });
+        }
+        callback({
+          code: grpc.status.INTERNAL,
+          message: "Internal server error",
+        });
+      }
+    },
+
+    BorrowBook: async (call, callback) => {
+      const req = call.request as BorrowBookRequest__Output;
+      const data = borrowBookRequest.parse(req);
+      try {
+        const borrowOrError = await borrowService.borrow(
+          data,
+          req.bookId as string
+        );
+        if (borrowOrError instanceof BorrowException) {
+          callback({
+            code: borrowOrError.code,
+            message: borrowOrError.message,
+          });
+        } else {
+          const borrow = borrowOrError;
+          callback(null, {
+            bookName: borrow.bookName,
+            returnDate: borrow.returnDate,
+            createdAt: borrow.createdAt,
+            id: borrow.id,
+          });
+        }
+      } catch (e) {
+        if (e instanceof BorrowException) {
           callback({
             code: e.code,
             message: e.message,

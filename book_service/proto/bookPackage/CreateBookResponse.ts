@@ -8,6 +8,7 @@ export interface CreateBookResponse {
   'addedBy'?: (string);
   'description'?: (string);
   'status'?: (string);
+  'id'?: (string);
 }
 
 export interface CreateBookResponse__Output {
@@ -17,4 +18,5 @@ export interface CreateBookResponse__Output {
   'addedBy'?: (string);
   'description'?: (string);
   'status'?: (string);
+  'id'?: (string);
 }
