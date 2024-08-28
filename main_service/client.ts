@@ -57,7 +57,7 @@ const app = express();
 app.use(express.json());
 const port = 3000;
 
-app.post("/signup", (req: Request, res: Response) => {
+app.post("/auth/signup", (req: Request, res: Response) => {
   const { name, email, password } = req.body;
   userClient.Signup(
     { name, email, password },
@@ -80,7 +80,7 @@ app.post("/signup", (req: Request, res: Response) => {
   );
 });
 
-app.post("/login", async (req: Request, res: Response) => {
+app.post("/auth/login", async (req: Request, res: Response) => {
   const { email, password } = req.body;
   userClient.Login(
     { email, password },
@@ -103,7 +103,54 @@ app.post("/login", async (req: Request, res: Response) => {
   );
 });
 
-app.post("/createBook", (req: Request, res: Response) => {
+app.patch("/profile/update", (req: Request, res: Response) => {
+  const { name, email } = req.body;
+  const token = req.header("Authorization");
+  userClient.UpdateProfile(
+    { name, email, token },
+    (
+      err: grpc.ServiceError | null,
+      response: UpdateProfileResponse__Output | undefined
+    ) => {
+      if (err) {
+        console.error("Error calling gRPC update profile:", err.message);
+        return res.status(err.code).json({ message: err.message });
+      }
+      if (response) {
+        return res.status(200).json({ data: response });
+      } else {
+        return res
+          .status(500)
+          .json({ message: "No response or token from gRPC service" });
+      }
+    }
+  );
+});
+
+app.get("/profile/get", (req: Request, res: Response) => {
+  const token = req.header("Authorization");
+  userClient.GetProfile(
+    { token },
+    (
+      err: grpc.ServiceError | null,
+      response: GetProfileResponse__Output | undefined
+    ) => {
+      if (err) {
+        console.error("Error calling gRPC get profile:", err.message);
+        return res.status(err.code).json({ message: err.message });
+      }
+      if (response) {
+        return res.status(200).json({ data: response });
+      } else {
+        return res
+          .status(500)
+          .json({ message: "No response or token from gRPC service" });
+      }
+    }
+  );
+});
+
+app.post("/books/createBook", (req: Request, res: Response) => {
   const { name, author, publisher, description } = req.body;
   const token = req.header("Authorization");
   if (!token) return new ValidationException("Unauthorized", 401);
@@ -157,7 +204,7 @@ app.post("/createBook", (req: Request, res: Response) => {
   };
 });
 
-app.get("/getBooks", (req: Request, res: Response) => {
+app.get("/books/getBooks", (req: Request, res: Response) => {
   const token = req.header("Authorization");
   if (!token) return new ValidationException("Unauthorized", 401);
 
@@ -202,53 +249,6 @@ app.get("/getBooks", (req: Request, res: Response) => {
       }
     );
   };
-});
-
-app.patch("/profile/update", (req: Request, res: Response) => {
-  const { name, email } = req.body;
-  const token = req.header("Authorization");
-  userClient.UpdateProfile(
-    { name, email, token },
-    (
-      err: grpc.ServiceError | null,
-      response: UpdateProfileResponse__Output | undefined
-    ) => {
-      if (err) {
-        console.error("Error calling gRPC update profile:", err.message);
-        return res.status(err.code).json({ message: err.message });
-      }
-      if (response) {
-        return res.status(200).json({ data: response });
-      } else {
-        return res
-          .status(500)
-          .json({ message: "No response or token from gRPC service" });
-      }
-    }
-  );
-});
-
-app.get("/profile/get", (req: Request, res: Response) => {
-  const token = req.header("Authorization");
-  userClient.GetProfile(
-    { token },
-    (
-      err: grpc.ServiceError | null,
-      response: GetProfileResponse__Output | undefined
-    ) => {
-      if (err) {
-        console.error("Error calling gRPC get profile:", err.message);
-        return res.status(err.code).json({ message: err.message });
-      }
-      if (response) {
-        return res.status(200).json({ data: response });
-      } else {
-        return res
-          .status(500)
-          .json({ message: "No response or token from gRPC service" });
-      }
-    }
-  );
 });
 
 app.post("/books/:bookId/borrow", (req: Request, res: Response) => {
